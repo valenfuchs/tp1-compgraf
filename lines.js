@@ -16,7 +16,7 @@ class LineDrawer {
 
     // Obtenemos la ubicación de los atributos de los vértices
     // en este caso, la posición 'pos'
-    this.vertPos = gl.getAttribLocation(this.prog, "pos");
+    this.vertPos = gl.getAttribLocation(this.prog, "pos"); 
 
     // Creamos el buffer para los vértices.
     // En este caso no tenemos triángulos, pero si segmentos
@@ -96,19 +96,26 @@ class LineDrawer {
     // Dibujamos lineas utilizando primitivas gl.LINE_STRIP
     // https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/drawArrays
     this.gl.drawArrays(this.gl.LINE_STRIP, 0, 4);
+    // cuando dice triangle es porq agarra del buffer de vertices grupos detres vertices para hacer un triangulo, aca los conecta de a dos 
   }
 }
 
 // Vertex shader de las rectas que unen los puntos de control
+// --> se ejecuta para cada vertex que pongamos en el buffer
 // Simplemente transforma el vector a coordenadas homogéneas y aplica la matriz de transformación
 var linesVS = `
-	attribute vec2 pos;
+	attribute vec2 pos;  
 	uniform mat4 mvp;
 	void main()
 	{
 		gl_Position = mvp * vec4(pos,0,1);
 	}
 `;
+
+//pos: atributo, cada vertice recibe su posicion en x, y (0 en z, 1 en alpha)
+// en la bezier definimos el parametro t de la curva parametrica (t diferente para cada vertice)
+
+// la curva de bezier es la interpolacion de las lineas que unen los puntos de control 
 
 // Fragment shader de las rectas que unen los puntos de control
 // Simplemente devuelve un color para cada fragmento, en este caso, rojo

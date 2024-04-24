@@ -10,16 +10,29 @@ class CurveDrawer {
     this.gl = gl;
     this.prog = InitShaderProgram(curvesVS, curvesFS, this.gl);
 
-    // [Completar] Incialización y obtención de las ubicaciones de los atributos y variables uniformes
+    // Obtenemos la ubicación de las varibles uniformes en los shaders, en este caso, la matriz de transformación 'mvp'
+    this.mvp = gl.getUniformLocation(this.prog, "mvp");
+	// Atributo: variables que tienen un valor asociado para cada vértice
+    this.t = gl.getAttribLocation(this.prog, "t"); // un puntero a t 
+    this.p0 = gl.getUniformLocation(this.prog, "p0");
+    this.p1 = gl.getUniformLocation(this.prog, "p1");
+    this.p2 = gl.getUniformLocation(this.prog, "p2");
+    this.p3 = gl.getUniformLocation(this.prog, "p3");
 
-		// Muestreo del parámetro t
-		this.steps = 100;
-		var tv = [];
-		for ( var i=0; i<this.steps; ++i ) {
-			tv.push( i / (this.steps-1) );
-		}
-		
-		// [Completar] Creacion del vertex buffer y seteo de contenido
+	// Muestreo del parámetro t
+	//100 intervalos (con distinto t): valores distintos para cada ejecucion del vertex shader
+	this.steps = 100; 
+	var tv = [];
+	for ( var i=0; i<this.steps; ++i ) {
+		tv.push( i / (this.steps-1) );
+	}
+	
+	// Creamos el buffer (unico porque tenemos un solo atributo: t)
+    this.buffer = gl.createBuffer();
+
+	// Enviamos al buffer
+	this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(tv), gl.STATIC_DRAW);
   }
 
 	// Actualización del viewport (se llama al inicializar la web o al cambiar el tamaño de la pantalla)
@@ -27,21 +40,70 @@ class CurveDrawer {
 	{
 		// [Completar] Matriz de transformación.
 		// [Completar] Binding del programa y seteo de la variable uniforme para la matriz. 
+
+		// Calculamos la matriz de proyección.
+		// Como nos vamos a manejar únicamente en 2D, no tiene sentido utilizar perspectiva.
+		// Simplemente inicializamos la matriz para que escale los elementos de la escena
+		// al ancho y alto del canvas, invirtiendo la coordeanda y. La matriz está en formato
+		// column-major.
+		var trans = [
+			2 / width,
+			0,
+			0,
+			0,
+			0,
+			-2 / height,
+			0,
+			0,
+			0,
+			0,
+			1,
+			0,
+			-1,
+			1,
+			0,
+			1,
+		];
+	
+		// Seteamos la matriz en la variable unforme del shader
+		this.gl.useProgram(this.prog);
+		this.gl.uniformMatrix4fv(this.mvp, false, trans);
 	}
 
-	updatePoints( pt )
+	updatePoints( pt ) //escribe los puntos en memoria de gpu
 	{
 		// [Completar] Actualización de las variables uniformes para los puntos de control
 		// [Completar] No se olviden de hacer el binding del programa antes de setear las variables 
 		// [Completar] Pueden acceder a las coordenadas de los puntos de control consultando el arreglo pt[]:
-		// var x = pt[i].getAttribute("cx");
-		// var y = pt[i].getAttribute("cy");
+		
+		//p0, p1, p2, p3
+		var p0 = [pt[0].getAttribute("cx"), pt[0].getAttribute("cy")];
+		var p1 = [pt[1].getAttribute("cx"), pt[1].getAttribute("cy")];
+		var p2 = [pt[2].getAttribute("cx"), pt[2].getAttribute("cy")];
+		var p3 = [pt[3].getAttribute("cx"), pt[3].getAttribute("cy")];
+
+		// Seteamos la matriz en la variable unforme del shader
+		this.gl.useProgram(this.prog);
+		this.gl.uniform2fv(this.p0, p0);
+		this.gl.uniform2fv(this.p1, p1);
+		this.gl.uniform2fv(this.p2, p2);
+		this.gl.uniform2fv(this.p3, p3);
 	}
 
 	draw()
 	{
-		// [Completar] Dibujamos la curva como una LINE_STRIP
-		// [Completar] No se olviden de hacer el binding del programa y de habilitar los atributos de los vértices
+		// Seleccionamos el shader
+		this.gl.useProgram(this.prog);
+
+		// Binding del buffer de posiciones
+		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffer);
+
+		// Habilitamos el atributo
+		this.gl.vertexAttribPointer(this.t, 1, this.gl.FLOAT, false, 0, 0);
+		this.gl.enableVertexAttribArray(this.t);
+
+		// Dibujamos la curva utilizando gl.LINE_STRIP
+		this.gl.drawArrays(this.gl.LINE_STRIP, 0, this.steps);
 	}
 }
 
@@ -57,10 +119,21 @@ var curvesVS = `
 	uniform vec2 p1;
 	uniform vec2 p2;
 	uniform vec2 p3;
-	void main()
-	{ 
-		gl_Position = vec4(0,0,0,1);
+
+	vec2 bezier(vec2 p0, vec2 p1, vec2 p2, vec2 p3, float t) {
+		float t2 = t * t;
+		float t3 = t2 * t;
+		float mt = 1.0 - t;
+		float mt2 = mt * mt;
+		float mt3 = mt2 * mt;
+		return mt3 * p0 + 3.0 * mt2 * t * p1 + 3.0 * mt * t2 * p2 + t3 * p3;
 	}
+	
+	void main() {
+		vec2 position = bezier(p0, p1, p2, p3, t);
+		gl_Position = mvp * vec4(position, 0.0, 1.0);
+	}
+
 `;
 
 // Fragment Shader
