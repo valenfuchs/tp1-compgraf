@@ -18,7 +18,10 @@ function indentityMatrix() {
 }
 
 function modelYRotationMatrix(angle) {
-  return indentityMatrix();
+  return [Math.cos(angle), 0, Math.sin(angle), 0,
+          0, 1, 0, 0,
+          -Math.sin(angle), 0, Math.cos(angle), 0,
+          0, 0, 0, 1];
 }
 
 function modelTranslationMatrix (displacement) {

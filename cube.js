@@ -92,14 +92,18 @@ class CubeDrawer {
 
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
-    const left = -1;
-    const right = 1;
-    const bottom = -1;
-    const top = 1;
+    const left = -4;
+    const right = 4;
+    const bottom = -4;
+    const top = 4;
     const near = -2;
     const far = 1;
 
-    let mvp = indentityMatrix();
+    // Punto 1
+    //let mvp = projectionMatrix(left, right, bottom, top, near, far);
+
+    // Punto 2
+    let mvp = multiplyMatrices(projectionMatrix(left, right, bottom, top, near, far), modelYRotationMatrix(runTime));
 
     // Tell WebGL how to pull out the positions from the position
     // buffer into the vertexPosition attribute.
