@@ -10,14 +10,17 @@ class CurveDrawer {
     this.gl = gl;
     this.prog = InitShaderProgram(curvesVS, curvesFS, this.gl);
 
-    // Obtenemos la ubicación de las varibles uniformes en los shaders, en este caso, la matriz de transformación 'mvp'
+    // Obtenemos la ubicación de las varibles uniformes en los shaders
+	// en este caso, son la matriz de transformación 'mvp' y los puntos de control
     this.mvp = gl.getUniformLocation(this.prog, "mvp");
-	// Atributo: variables que tienen un valor asociado para cada vértice
-    this.t = gl.getAttribLocation(this.prog, "t"); // un puntero a t 
-    this.p0 = gl.getUniformLocation(this.prog, "p0");
+	this.p0 = gl.getUniformLocation(this.prog, "p0");
     this.p1 = gl.getUniformLocation(this.prog, "p1");
     this.p2 = gl.getUniformLocation(this.prog, "p2");
     this.p3 = gl.getUniformLocation(this.prog, "p3");
+	// Obtenemos la ubicación del atributo t 
+	// obs: atributos son las variables que tienen un valor asociado para cada vértice
+    this.t = gl.getAttribLocation(this.prog, "t"); // "es como un puntero a t"
+    
 
 	// Muestreo del parámetro t
 	//100 intervalos (con distinto t): valores distintos para cada ejecucion del vertex shader
@@ -70,13 +73,14 @@ class CurveDrawer {
 		this.gl.uniformMatrix4fv(this.mvp, false, trans);
 	}
 
-	updatePoints( pt ) //escribe los puntos en memoria de gpu
+	updatePoints( pt ) // Escribe los puntos en memoria de gpu
 	{
-		// [Completar] Actualización de las variables uniformes para los puntos de control
-		// [Completar] No se olviden de hacer el binding del programa antes de setear las variables 
-		// [Completar] Pueden acceder a las coordenadas de los puntos de control consultando el arreglo pt[]:
+		// Actualización de las variables uniformes para los puntos de control
+		// No se olviden de hacer el binding del programa antes de setear las variables 
+		// Pueden acceder a las coordenadas de los puntos de control consultando el arreglo pt[]:
 		
-		//p0, p1, p2, p3
+		//puntos de control p0, p1, p2, p3
+		// accedemos a las coordenadas de los puntos de control consultando el arreglo pt[]
 		var p0 = [pt[0].getAttribute("cx"), pt[0].getAttribute("cy")];
 		var p1 = [pt[1].getAttribute("cx"), pt[1].getAttribute("cy")];
 		var p2 = [pt[2].getAttribute("cx"), pt[2].getAttribute("cy")];
@@ -108,7 +112,7 @@ class CurveDrawer {
 }
 
 // Vertex Shader
-//[Completar] El vertex shader se ejecuta una vez por cada punto en mi curva (parámetro step). No confundir punto con punto de control.
+// El vertex shader se ejecuta una vez por cada punto en mi curva (parámetro step). No confundir punto con punto de control.
 // Deberán completar con la definición de una Bezier Cúbica para un punto t. Algunas consideraciones generales respecto a GLSL: si
 // declarás las variables pero no las usás, no se les asigna espacio. Siempre poner ; al finalizar las sentencias. Las constantes
 // en punto flotante necesitan ser expresadas como X.Y, incluso si son enteros: ejemplo, para 4 escribimos 4.0
@@ -119,7 +123,7 @@ var curvesVS = `
 	uniform vec2 p1;
 	uniform vec2 p2;
 	uniform vec2 p3;
-
+ 
 	vec2 bezier(vec2 p0, vec2 p1, vec2 p2, vec2 p3, float t) {
 		float t2 = t * t;
 		float t3 = t2 * t;
