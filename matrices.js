@@ -18,14 +18,19 @@ function indentityMatrix() {
 }
 
 function modelYRotationMatrix(angle) {
-  return [Math.cos(angle), 0, Math.sin(angle), 0,
+  return [Math.cos(angle), 0, -Math.sin(angle), 0,
           0, 1, 0, 0,
-          -Math.sin(angle), 0, Math.cos(angle), 0,
+          Math.sin(angle), 0, Math.cos(angle), 0,
           0, 0, 0, 1];
 }
 
 function modelTranslationMatrix (displacement) {
-  return indentityMatrix();
+  return [
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 1, 0,
+    displacement[0], displacement[1], displacement[2], 1
+  ];
 }
 
 function projectionMatrix(l, r, b, t, n, f) {

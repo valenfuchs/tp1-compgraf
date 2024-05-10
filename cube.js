@@ -81,6 +81,16 @@ class CubeDrawer {
     this.gl.enableVertexAttribArray(this.programInfo.attribLocations.vertexColor);
   }
 
+  getBezierPoints(t, p0, p1, p2, p3) {
+    function bezier(t, p0, p1, p2, p3) {
+      let x = Math.pow(1-t,3) * p0[0] + 3 * Math.pow(1-t,2) * t * p1[0] + 3 * (1-t) * Math.pow(t,2) * p2[0] + Math.pow(t,3) * p3[0];
+      let y = Math.pow(1-t,3) * p0[1] + 3 * Math.pow(1-t,2) * t * p1[1] + 3 * (1-t) * Math.pow(t,2) * p2[1] + Math.pow(t,3) * p3[1];
+      return [x, y, 0];
+    }
+    let bezierPoint = bezier(t, p0, p1, p2, p3);
+    return bezierPoint;
+  }
+
   // Dibujamos los segmentos de linea
   draw(runTime, points) {
     this.gl.clearColor(0.0, 0.0, 0.0, 1.0); // Clear to black, fully opaque
@@ -103,7 +113,14 @@ class CubeDrawer {
     //let mvp = projectionMatrix(left, right, bottom, top, near, far);
 
     // Punto 2
-    let mvp = multiplyMatrices(projectionMatrix(left, right, bottom, top, near, far), modelYRotationMatrix(runTime));
+    //let mvp = multiplyMatrices(projectionMatrix(left, right, bottom, top, near, far), modelYRotationMatrix(runTime));
+
+    //Punto 4
+    const t = runTime % 1;
+    const bezierPoints = this.getBezierPoints(t, points[0], points[1], points[2], points[3]);
+
+    // Transladar el cube a la posición de la curva de Bezier
+    let mvp = multiplyMatrices(projectionMatrix(left, right, bottom, top, near, far), multiplyMatrices(modelYRotationMatrix(runTime), modelTranslationMatrix(bezierPoints)));
 
     // Tell WebGL how to pull out the positions from the position
     // buffer into the vertexPosition attribute.
