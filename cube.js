@@ -116,7 +116,7 @@ class CubeDrawer {
     //let mvp = multiplyMatrices(projectionMatrix(left, right, bottom, top, near, far), modelYRotationMatrix(runTime));
 
     //Punto 4
-    const t = runTime % 1;
+    const t = Math.abs(Math.cos(runTime));
     const bezierPoints = this.getBezierPoints(t, points[0], points[1], points[2], points[3]);
 
     // Transladar el cube a la posición de la curva de Bezier
