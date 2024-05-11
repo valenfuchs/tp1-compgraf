@@ -11,5 +11,5 @@ Un orden posible para lograr los objetivos es el siguiente
 4. Desplazar el cubo verticalmente según la bezier usando el tiempo de ejecución como parámetro
 5. Cambiar la proyección a una de perspectiva, para poder visualizar los desplazamientos en profundidad
 6. (Opcional) Variar la posición del cubo en el eje Z según el tiempo de ejecución para chequear que la proyección en perspectiva funcione
-7. Desplazar el cubo sobre el eje Z según la curva de bezier usando el tiempo de ejecución como parámetro
-8. Hacer que la animación rebote al final y principio de la curva, cambiando como se utiliza el tiempo de ejecución como parámetro
+7. Desplazar el cubo sobre el eje Z según la curva de bezier usando el tiempo de ejecución como parámetro (a la traslacion le pasamos la bezier)
+8. Hacer que la animación rebote al final y principio de la curva, cambiando como se utiliza el tiempo de ejecución como parámetro (al t le pusimos coseno)

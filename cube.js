@@ -6,6 +6,7 @@ import {
   modelYRotationMatrix,
   modelTranslationMatrix,
   projectionMatrix,
+  perspectiveProjectionMatrix
 } from "./matrices.js";
 
 // Clase muy similar a CurveDrawer. Pueden utilizarla como modelo para resolver el TP.
@@ -85,7 +86,7 @@ class CubeDrawer {
     function bezier(t, p0, p1, p2, p3) {
       let x = Math.pow(1-t,3) * p0[0] + 3 * Math.pow(1-t,2) * t * p1[0] + 3 * (1-t) * Math.pow(t,2) * p2[0] + Math.pow(t,3) * p3[0];
       let y = Math.pow(1-t,3) * p0[1] + 3 * Math.pow(1-t,2) * t * p1[1] + 3 * (1-t) * Math.pow(t,2) * p2[1] + Math.pow(t,3) * p3[1];
-      return [x, y, 0];
+      return [0, y, x]; //se desplaza en z el punto de la bezier en x 
     }
     let bezierPoint = bezier(t, p0, p1, p2, p3);
     return bezierPoint;
@@ -102,11 +103,11 @@ class CubeDrawer {
 
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
-    const left = -4;
-    const right = 4;
-    const bottom = -4;
-    const top = 4;
-    const near = -2;
+    const left = -1;
+    const right = 1;
+    const bottom = -1;
+    const top = 1;
+    const near = -1;
     const far = 1;
 
     // Punto 1
@@ -116,11 +117,24 @@ class CubeDrawer {
     //let mvp = multiplyMatrices(projectionMatrix(left, right, bottom, top, near, far), modelYRotationMatrix(runTime));
 
     //Punto 4
+    // Normaliza el tiempo de ejecución entre 0 y 1
+    // con coseno rebota
     const t = Math.abs(Math.cos(runTime));
+
     const bezierPoints = this.getBezierPoints(t, points[0], points[1], points[2], points[3]);
+    
+    // Calcula la matriz de traslación basada en los puntos de la curva de Bézier
+    const translationMatrix = modelTranslationMatrix(bezierPoints);
+
+    // Aplica la rotación del cubo al tiempo de ejecución
+    const rotationMatrix = modelYRotationMatrix(runTime);
+
+    // Combina la matriz de traslación y la matriz de rotación
+    let modelMatrix = multiplyMatrices(translationMatrix, rotationMatrix);
 
     // Transladar el cube a la posición de la curva de Bezier
-    let mvp = multiplyMatrices(projectionMatrix(left, right, bottom, top, near, far), multiplyMatrices(modelYRotationMatrix(runTime), modelTranslationMatrix(bezierPoints)));
+    let mvp = multiplyMatrices(perspectiveProjectionMatrix(left, right, bottom, top, near, far), modelMatrix);
+    mvp = multiplyMatrices(projectionMatrix(left, right, bottom, top, near, far), mvp);
 
     // Tell WebGL how to pull out the positions from the position
     // buffer into the vertexPosition attribute.
