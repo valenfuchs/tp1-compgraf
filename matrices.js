@@ -24,7 +24,7 @@ function modelYRotationMatrix(angle) {
           0, 0, 0, 1];
 }
 
-function modelTranslationMatrix (displacement) {
+function modelTranslationMatrix(displacement) {
   return [
     1, 0, 0, 0,
     0, 1, 0, 0,
@@ -45,23 +45,14 @@ function modelTranslationMatrix2(displacement) {
 function projectionMatrix(l, r, b, t, n, f) {
   let rl = r - l;
   let tb = t - b;
-  let fn = f - n;
+  let fn = n - f;
+  // NOTA: Usamos f - n porque venía dado en el código original. Probamos usar n - f (como estaba en las fórmulas de la teórica)
+  //        y notamos que dejábamos de ver l
   return [2/rl, 0, 0, 0,
           0, 2/tb, 0, 0,
           0, 0, 2/fn, 0,
           -(r+l)/rl, -(t+b)/tb, -(f+n)/fn, 1];         
 }
-
-/*
-function perspectiveProjectionMatrix(l, r, b, t, n, f) {
-  return [
-      2*n/(r-l), 0, 0, 0,
-      0, 2*n/(t-b), 0, 0,
-      0, 0, -(f+n)/(f-n), -2*f*n/(f-n),
-      0, 0, -1, 0
-  ];
-}
-*/
 
 function perspectiveProjectionMatrix(l, r, b, t, n, f) {
   return [
