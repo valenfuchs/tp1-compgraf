@@ -45,9 +45,10 @@ function modelTranslationMatrix2(displacement) {
 function projectionMatrix(l, r, b, t, n, f) {
   let rl = r - l;
   let tb = t - b;
-  let fn = n - f;
-  // NOTA: Usamos f - n porque venía dado en el código original. Probamos usar n - f (como estaba en las fórmulas de la teórica)
-  //        y notamos que dejábamos de ver l
+  let fn = f - n;
+  // NOTA: Usamos f - n porque venía dado en el código original. Probamos usar n - f (como estaba en las fórmulas de la teórica) y notamos
+  //        que la pared del cubo más cercana al observador "desaparece". Las paredes que normalmente se encuentran más lejos 
+  //        según la orientación estándar ahora se consideran más cercanas debido a la inversión en la orientación sobre el eje z de la proyección.
   return [2/rl, 0, 0, 0,
           0, 2/tb, 0, 0,
           0, 0, 2/fn, 0,
