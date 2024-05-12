@@ -127,6 +127,13 @@ class CubeDrawer {
     // Punto 2
     //let mvp = multiplyMatrices(projectionMatrix(left, right, bottom, top, near, far), modelYRotationMatrix(runTime));
 
+    const left = -1;
+    const right = 1;
+    const bottom = -1;
+    const top = 1;
+    const near = -1;
+    const far = 1;
+
     // Punto 4
     //const t = Math.abs(Math.sin(runTime));
     //const bezierPoints = this.getBezierPoints(t, points[0], points[1], points[2], points[3]);
@@ -139,13 +146,6 @@ class CubeDrawer {
     //mvp = multiplyMatrices(projectionMatrix(left, right, bottom, top, near, far), mvp);
 
     // Puntos 7 y 8
-    const left = -1;
-    const right = 1;
-    const bottom = -1;
-    const top = 1;
-    const near = -1;
-    const far = 1;
-
     // Normaliza el tiempo de ejecución entre 0 y 1
     // Usando coseno el cubo rebota al principio y al final de la curva
     const t = Math.abs(Math.cos(runTime));

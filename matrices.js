@@ -38,8 +38,8 @@ function modelTranslationMatrix2(displacement) {
     1, 0, 0, 0,
     0, 1, 0, 0,
     0, 0, 1, 0,
-    displacement[0], displacement[1], 5+displacement[2]*5, 1
-  ];
+    displacement[0], displacement[1], 5+displacement[2]*5, 1 
+  ]; // Cualquier desplazamiento en la dirección z se amplificará en comparación con modelTranslationMatrix
 }
 
 function projectionMatrix(l, r, b, t, n, f) {
