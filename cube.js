@@ -114,6 +114,8 @@ class CubeDrawer {
 
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
+    // Punto 1
+
     // const left = -4;
     // const right = 4;
     // const bottom = -4;
@@ -121,12 +123,12 @@ class CubeDrawer {
     // const near = -2;
     // const far = 1;
 
-    // Punto 1
     //let mvp = projectionMatrix(left, right, bottom, top, near, far);
 
-    // Punto 2
+    // Punto 2 - Hacemos girar el cubo sobre el eje y
     //let mvp = multiplyMatrices(projectionMatrix(left, right, bottom, top, near, far), modelYRotationMatrix(runTime));
 
+    // Redefinimos los parametros para una mejor visualizacion
     const left = -1;
     const right = 1;
     const bottom = -1;
@@ -134,21 +136,30 @@ class CubeDrawer {
     const near = -1;
     const far = 1;
 
-    // Punto 4
+    // Punto 4 - Dezplazamos el cubo verticalmente sobre la bezier
+
+    // Usamos el tiempo de ejecucion como parametro. Usamos Math.abs(Math.sin()) para normalizar el tiempo de ejecución entre 0 y 1.
     //const t = Math.abs(Math.sin(runTime));
+
+    // Obtenemos los puntos de la curva bezier
     //const bezierPoints = this.getBezierPoints(t, points[0], points[1], points[2], points[3]);
+
     //let modelMatrix = multiplyMatrices(modelTranslationMatrix(bezierPoints), modelYRotationMatrix(runTime));
     //let mvp = multiplyMatrices(projectionMatrix(left, right, bottom, top, near, far), modelMatrix);
 
-    // Punto 5
+    // Punto 5 - Cambiamos la proyeccion ortografica a una de perspectiva
+  
     //let modelMatrix = multiplyMatrices(modelTranslationMatrix2(bezierPoints), modelYRotationMatrix(runTime));
+
+    // Componemos la transformacion perspectiva y la proyeccion ortografica
     //let mvp = multiplyMatrices(perspectiveProjectionMatrix(left, right, bottom, top, near, far), modelMatrix);
     //mvp = multiplyMatrices(projectionMatrix(left, right, bottom, top, near, far), mvp);
 
     // Puntos 7 y 8
-    // Normaliza el tiempo de ejecución entre 0 y 1
     // Usando coseno el cubo rebota al principio y al final de la curva
     const t = Math.abs(Math.cos(runTime));
+
+    // Obtenemos los puntos de bezier utilizando la nueva funcion
     const bezierPoints = this.getBezierPoints2(t, points[0], points[1], points[2], points[3]);
     
     // Calcula la matriz de traslación basada en los puntos de la curva de Bézier
@@ -157,7 +168,7 @@ class CubeDrawer {
     // Combina la matriz de traslación y la matriz de rotación
     let modelMatrix = multiplyMatrices(translationMatrix, modelYRotationMatrix(runTime));
 
-    // Transladar el cube a la posición de la curva de Bezier
+    // Transladar el cubo a la posición de la curva de Bezier
     let mvp = multiplyMatrices(perspectiveProjectionMatrix(left, right, bottom, top, near, far), modelMatrix);
     mvp = multiplyMatrices(projectionMatrix(left, right, bottom, top, near, far), mvp);
 
